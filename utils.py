@@ -34,6 +34,7 @@ def save_submission(model_name,loss_model,y_test):
 	nn_sub[nn_sub.columns[1:]] = y_test
 	log_loss = loss_model
 	nn_sub.to_csv("%s_%s.csv"%(model_name,log_loss),index=None)
+	print "Save submission completed"
 def load_train(file_name="train_data"):
 	dat_file = np.load(file_name)
 	return dat_file["X_train"],dat_file["X_test"],dat_file["y_train"],dat_file["y_test"]

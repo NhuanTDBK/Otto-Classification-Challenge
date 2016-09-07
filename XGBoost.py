@@ -46,12 +46,12 @@ param_grid = {
               'n_estimators': sp_randint(100,600),
 }
 
-print "Randomized GBM"
+print "Randomized XGBoost"
 # In[ ]:
 for i in range(2):
 	print "Loop %i/20"%i
 	search_GB = RandomizedSearchCV(GB,param_grid,scoring='log_loss',n_jobs=-1,
-               n_iter=n_iter,cv=cv,verbose=True)
+               n_iter=2,cv=cv,verbose=True)
 	search_GB.fit(X_train,y_train)
 	log_model = search_GB.score(X_val,y_val)
 	print "Log loss = %s"%log_model

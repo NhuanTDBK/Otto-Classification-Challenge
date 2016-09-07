@@ -18,7 +18,7 @@ from utils import *
 
 # In[3]:
 
-n_iter = 200
+n_iter = 100
 k_fold = 10
 # cv = kfold
 # initialize the classifier
@@ -36,14 +36,14 @@ param_grid = {
       "min_samples_split": sp_randint(1, 11),
       "min_samples_leaf": sp_randint(1, 11),
       'subsample': np.arange(0.6,1.0,step=0.05),
-#       "n_estimators": sp_randint(100,600)
+      "n_estimators": sp_randint(100,600)
 }
 
 
 # In[ ]:
 
 search_GB = RandomizedSearchCV(model,param_grid,scoring='log_loss',n_jobs=-1,
-               n_iter=2,cv=cv,verbose=True)
+               n_iter=n_iter,cv=cv,verbose=True)
 search_GB.fit(X_train,y_train.flatten())
 
 
@@ -54,9 +54,4 @@ print "Log loss = %s"%log_model
 X_test = get_test()
 y_pred = search_GB.predict_proba(X_test)
 save_submission(model_name,log_model,y_pred)
-
-
-# In[ ]:
-
-log
 

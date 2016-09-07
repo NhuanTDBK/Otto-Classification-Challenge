@@ -18,7 +18,7 @@ from utils import *
 
 # In[2]:
 
-n_iter = 200
+n_iter = 100
 k_fold = 10
 # cv = kfold
 # initialize the classifier
@@ -30,16 +30,15 @@ X_train, X_val, y_train, y_val, cv = load_train_and_kfold(n_folds=k_fold)
 model = KNeighborsClassifier()
 model_name = model.__class__.__name__
 param_grid = {
-      "n_neighbors": sp_randint(4, 100),
+      "n_neighbors": sp_randint(4,400),
       "algorithm" : ["auto", "ball_tree", "kd_tree", "brute"],
-#       "n_estimators": sp_randint(100,600)
 }
 
 
 # In[ ]:
 
 search_GB = RandomizedSearchCV(model,param_grid,scoring='log_loss',n_jobs=-1,
-               n_iter=2,cv=cv,verbose=True)
+               n_iter=n_iter,cv=cv,verbose=True)
 search_GB.fit(X_train,y_train.flatten())
 
 

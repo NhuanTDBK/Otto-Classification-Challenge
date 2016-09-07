@@ -10,7 +10,7 @@ from sklearn.cross_validation import StratifiedShuffleSplit, train_test_split
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.metrics import auc, f1_score, log_loss
 from keras.models import Sequential
-from keras.layers import Dense, Activation
+from keras.layers import Dense, Activation, Dropout
 from keras.objectives import categorical_crossentropy
 from keras.optimizers import Adam, Adagrad
 from keras.callbacks import EarlyStopping
@@ -31,21 +31,23 @@ X_train,X_test,y_train, y_test = train_test_split(new_dat,onehot_categorical,tes
 np.savez("train_data",X_train=X_train,X_test=X_test,y_train=y_train,y_test=y_test)
 
 # In[20]:
-
-hidden_nodes = 10
+batch_size = 64
+nb_epoch = 512
+hidden_nodes = 1024
 output_node = labelEncoder.classes_.shape[0]
 model = Sequential([
     Dense(hidden_nodes,input_dim=X_train.shape[1], activation='sigmoid',init='uniform'),
+    Dropout(0.5),	
     Dense(output_node, init='uniform'),
     Activation('softmax')
 ])
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer='adagrad', metrics=['accuracy'])
 # In[21]:
 
 model.summary()
 # In[ ]:
 
-history = model.fit(X_train.values,y_train, nb_epoch=400, batch_size=10, verbose=2)
+history = model.fit(X_train.values,y_train, nb_epoch=nb_epoch, batch_size=batch_size, verbose=2,validation_split=0.3)
 
 
 # In[25]:
@@ -61,7 +63,7 @@ loss_model= log_loss(y_test, y_pred)
 # In[ ]:
 
 test = pd.read_csv('data/test.csv')
-new_test = test.drop(['id'],axis=1)
+new_test = np.log(test.drop(['id'],axis=1)+1)
 y_test = model.predict_proba(new_test.values)
 
 print "Log loss = %s"%loss_model

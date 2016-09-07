@@ -6,7 +6,6 @@
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
-import xgboost as xgb
 from sklearn.metrics import log_loss
 from sklearn.grid_search import RandomizedSearchCV
 from sklearn.cross_validation import StratifiedKFold
@@ -23,43 +22,41 @@ n_iter = 200
 k_fold = 10
 # cv = kfold
 # initialize the classifier
-
-
-# In[3]:
-
 X_train, X_val, y_train, y_val, cv = load_train_and_kfold(n_folds=k_fold)
+
+
+# In[6]:
+
+model = RandomForestClassifier(random_state=4111)
+model_name = model.__class__.__name__
+param_grid = {
+      "max_depth": sp_randint(4, 100),
+      "max_features": sp_randint(1, 11),
+      "min_samples_split": sp_randint(1, 11),
+      "min_samples_leaf": sp_randint(1, 11),
+      "bootstrap": [True, False],
+      "criterion": ["gini", "entropy"],
+#       "n_estimators": sp_randint(100,600)
+}
 
 
 # In[4]:
 
-GB = xgb.XGBClassifier()
-param_grid = {
-              'max_depth': sp_randint(4, 100),
-              'learning_rate': sp_uniform(loc=0e0,scale=1e0),
-              'objective':['multi:softprob'],
-              'nthread': [8],
-              'missing': [np.nan],
-              'reg_alpha': [0.01,0.017782794,0.031622777,0.056234133,\
-                            0.1,0.17782794,0.31622777,0.56234133,1.,1.77827941,\
-                            3.16227766,5.62341325,10.,\
-                            17.7827941,31.6227766,56.2341325,100.],
-              'colsample_bytree': sp_uniform(loc=0.2e0,scale=0.8e0),
-              'subsample': np.arange(0.6,1.0,step=0.05),
-              'n_estimators': sp_randint(100,600),
-}
-
-
-# In[ ]:
-
-search_GB = RandomizedSearchCV(GB,param_grid,scoring='log_loss',n_jobs=-1,
+search_GB = RandomizedSearchCV(model,param_grid,scoring='log_loss',n_jobs=-1,
                n_iter=2,cv=cv,verbose=True)
-search_GB.fit(X_train,y_train)
+search_GB.fit(X_train,y_train.flatten())
 
 
-# In[ ]:
+# In[5]:
 
-log_model = search_GB.score(X_val,y_val)
+log_model = search_GB.score(X_val,y_val.flatten())
 print "Log loss = %s"%log_model
 X_test = get_test()
-# save_submission('XGBoost',log_model,search_GB.predict_proba(X_test))
+y_pred = search_GB.predict_proba(X_test)
+save_submission(model_name,log_model,y_pred)
+
+
+# In[7]:
+
+model_name
 

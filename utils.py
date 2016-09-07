@@ -20,7 +20,6 @@ def load_train_and_kfold(n_folds=10):
 	train_dat.head()
 	new_dat = train_dat.drop(['id','target'],axis=1)
 	categories = labelEncoder.fit_transform(train_dat.target).reshape(-1,1)
-	onehot_categorical = onehotEncoder.fit_transform(categories.reshape(-1,1)).toarray()
 	X_train,X_test,y_train, y_test = train_test_split(new_dat,categories,test_size=0.3,stratify=categories)
 	kfold = StratifiedKFold(labelEncoder.fit_transform(train_dat.target[:X_train.shape[0]]), n_folds=n_folds, shuffle=True)
 	return X_train,X_test,y_train, y_test, kfold 

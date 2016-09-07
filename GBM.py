@@ -19,20 +19,18 @@ from utils import *
 
 # In[2]:
 
-n_iter = 200
+n_iter = 100
 k_fold = 10
 # cv = kfold
 # initialize the classifier
 
 
 # In[3]:
-
 X_train, X_val, y_train, y_val, cv = load_train_and_kfold(n_folds=k_fold)
-
 
 # In[4]:
 
-GB = xgb.XGBClassifier()
+GB = xgb.XGBClassifier(silent=False)
 param_grid = {
               'max_depth': sp_randint(4, 100),
               'learning_rate': sp_uniform(loc=0e0,scale=1e0),
@@ -48,14 +46,14 @@ param_grid = {
               'n_estimators': sp_randint(100,600),
 }
 
-
+print "Randomized GBM"
 # In[ ]:
-for i in range(30):
+for i in range(2):
+	print "Loop %i/20"%i
 	search_GB = RandomizedSearchCV(GB,param_grid,scoring='log_loss',n_jobs=-1,
-               n_iter=2,cv=cv,verbose=True)
+               n_iter=1,cv=cv,verbose=True)
 	search_GB.fit(X_train,y_train)
 	log_model = search_GB.score(X_val,y_val)
 	print "Log loss = %s"%log_model
 	X_test = get_test()
 	save_submission('XGBoost',log_model,search_GB.predict_proba(X_test))
-

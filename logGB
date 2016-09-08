@@ -1,1 +1,2 @@
 Fitting 10 folds for each of 100 candidates, totalling 1000 fits
+[Parallel(n_jobs=-1)]: Done  34 tasks      | elapsed: 487.6min

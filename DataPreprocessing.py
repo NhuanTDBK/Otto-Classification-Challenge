@@ -10,7 +10,7 @@ from sklearn.cross_validation import StratifiedShuffleSplit, train_test_split, S
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.metrics import auc, f1_score, log_loss
 from keras.models import Sequential
-from keras.layers import Dense, Activation
+from keras.layers import Dense, Activation, Dropout
 from keras.objectives import categorical_crossentropy
 from keras.optimizers import Adam, Adagrad
 from keras.callbacks import EarlyStopping
@@ -25,19 +25,21 @@ labelEncoder = LabelEncoder()
 onehotEncoder = OneHotEncoder()
 train_dat.head()
 new_dat = np.log(train_dat.drop(['id','target'],axis=1)+1)
-kfold = StratifiedKFold(labelEncoder.fit_transform(train_dat.target[:X_train.shape[0]]), n_folds=10, shuffle=True)
+#kfold = StratifiedKFold(labelEncoder.fit_transform(Xtrain_dat.target[:X_train.shape[0]]), n_folds=5, shuffle=True)
 categories = labelEncoder.fit_transform(train_dat.target).reshape(-1,1)
 onehot_categorical = onehotEncoder.fit_transform(categories.reshape(-1,1)).toarray()
 dummy_y = to_categorical(categories)
 X_train,X_test,y_train, y_test = train_test_split(new_dat,onehot_categorical,test_size=0.3,stratify=categories)
+kfold = StratifiedKFold(labelEncoder.fit_transform(train_dat.target[:X_train.shape[0]]), n_folds=5, shuffle=True)
 
 
 # In[71]:
 
-hidden_nodes = 10
-output_node = labelEncoder.classes_.shape[0]
+hidden_nodes = 1024
+output_node = 9
 model = Sequential([
     Dense(hidden_nodes,input_dim=X_train.shape[1], activation='sigmoid',init='uniform'),
+    
     Dense(output_node, init='uniform'),
     Activation('softmax')
 ])
@@ -47,10 +49,13 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 # In[60]:
 
 def create_model():
-    hidden_nodes = 10
-    output_node = labelEncoder.classes_.shape[0]
+    hidden_nodes = 1024
+    output_node = 9
     model = Sequential([
         Dense(hidden_nodes,input_dim=X_train.shape[1], activation='sigmoid',init='uniform'),
+        Dropout(0.5),
+        Dense(2048,init='uniform',activation='sigmoid'),
+        Dropout(0.5),
         Dense(output_node, init='uniform'),
         Activation('softmax')
     ])
@@ -65,7 +70,7 @@ model.summary()
 
 # In[65]:
 
-sk_model = KerasClassifier(build_fn=create_model,nb_epoch=10, batch_size = 10)
+sk_model = KerasClassifier(build_fn=create_model,nb_epoch=256, batch_size = 64, validation_split=0.1, verbose=2)
 
 
 # In[66]:
@@ -75,7 +80,7 @@ scores = cross_val_score(sk_model, X_train.values,y_train, cv=kfold, n_jobs=1, s
 
 # In[69]:
 
-scores.mean()
+print scores.mean()
 
 
 # In[70]:
@@ -85,7 +90,7 @@ scores.mean()
 
 # In[25]:
 
-y_pred = model.predict_proba(X_test.values, batch_size=10)
+y_pred = sk_model.predict_proba(X_test.values, batch_size=10)
 
 
 # In[26]:

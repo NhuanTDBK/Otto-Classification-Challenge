@@ -1,3 +1,10 @@
 Fitting 10 folds for each of 100 candidates, totalling 1000 fits
 [Parallel(n_jobs=-1)]: Done  34 tasks      | elapsed: 28.4min
 [Parallel(n_jobs=-1)]: Done 184 tasks      | elapsed: 191.2min
+[Parallel(n_jobs=-1)]: Done 434 tasks      | elapsed: 466.1min
+[Parallel(n_jobs=-1)]: Done 784 tasks      | elapsed: 596.3min
+[Parallel(n_jobs=-1)]: Done 1000 out of 1000 | elapsed: 667.3min finished
+/usr/local/lib/python2.7/dist-packages/sklearn/grid_search.py:418: ChangedBehaviorWarning: The long-standing behavior to use the estimator's score function in RandomizedSearchCV.score has changed. The scoring parameter is now used.
+  ChangedBehaviorWarning)
+Log loss = -0.596923353785
+Save submission completed

@@ -33,11 +33,13 @@ np.savez("train_data",X_train=X_train,X_test=X_test,y_train=y_train,y_test=y_tes
 # In[20]:
 batch_size = 64
 nb_epoch = 512
-hidden_nodes = 1024
+hidden_nodes = 2048
 output_node = labelEncoder.classes_.shape[0]
 model = Sequential([
-    Dense(hidden_nodes,input_dim=X_train.shape[1], activation='sigmoid',init='uniform'),
+    Dense(hidden_nodes,input_dim=X_train.shape[1], activation='relu',init='uniform'),
     Dropout(0.5),	
+    Dense(4096,init='uniform',activation='relu'),
+    Dropout(0.5),
     Dense(output_node, init='uniform'),
     Activation('softmax')
 ])
@@ -47,12 +49,12 @@ model.compile(loss='categorical_crossentropy', optimizer='adagrad', metrics=['ac
 model.summary()
 # In[ ]:
 
-history = model.fit(X_train.values,y_train, nb_epoch=nb_epoch, batch_size=batch_size, verbose=2,validation_split=0.3)
+history = model.fit(X_train.values,y_train, nb_epoch=nb_epoch, batch_size=batch_size, verbose=2,validation_split=0.1)
 
 
 # In[25]:
 
-y_pred = model.predict_proba(X_test.values, batch_size=10)
+y_pred = model.predict_proba(X_test.values, batch_size=batch_size)
 
 
 # In[26]:

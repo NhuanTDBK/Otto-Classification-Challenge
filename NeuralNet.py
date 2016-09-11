@@ -36,10 +36,10 @@ nb_epoch = 512
 hidden_nodes = 2048
 output_node = labelEncoder.classes_.shape[0]
 model = Sequential([
-    Dense(hidden_nodes,input_dim=X_train.shape[1], activation='relu',init='uniform'),
+    Dense(hidden_nodes,input_dim=X_train.shape[0],activation='sigmoid',init='uniform'),
     Dropout(0.5),	
-    Dense(4096,init='uniform',activation='relu'),
-    Dropout(0.5),
+    Dense(4096,init='uniform',activation='sigmoid'),
+    Dropout(0.16),
     Dense(output_node, init='uniform'),
     Activation('softmax')
 ])
